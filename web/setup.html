@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Select · Setup</title>
+<link rel="icon" href="/static/icon.svg">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="setup-page">
+  <h1>📸 Photo Select</h1>
+  <p class="lead">Swipe through your photos on your phone. Right = keep, left = skip.</p>
+
+  <div id="not-local" class="panel" hidden>
+    <h2>Settings live on the computer</h2>
+    Open <b>http://localhost:<span id="port"></span>/setup</b> on the computer that has the photos.
+    <p><a href="/">← Back to swiping</a></p>
+  </div>
+
+  <div id="connect" class="panel" hidden>
+    <h2>Open this on your phone</h2>
+    <div class="urls" id="urls"></div>
+    <p class="progress-line" id="progress-line"></p>
+    <ol class="steps">
+      <li>Phone and computer on the same Wi-Fi.</li>
+      <li>In Safari, open the address above. Tip: Share → <i>Add to Home Screen</i> for full-screen.</li>
+      <li>To watch on the TV: Control Centre → <i>Screen Mirroring</i> → your TV.</li>
+    </ol>
+    <p><a href="/">Open the swiper on this computer</a> (← → keys work too) · <a href="/api/export.csv">Download decisions (CSV)</a></p>
+  </div>
+
+  <form id="form">
+    <div id="error" class="error" hidden></div>
+
+    <div class="field">
+      <label for="source">1. Folder with all your photos</label>
+      <div class="row">
+        <input type="text" id="source" placeholder="/Volumes/MyDrive/Photos" autocomplete="off" spellcheck="false">
+        <button type="button" class="button pick" data-target="source">Choose…</button>
+      </div>
+      <div class="hint">Sub-folders are included. Originals are never changed unless you pick “Move” below.</div>
+    </div>
+
+    <div class="field">
+      <label for="output">2. Where to put the selected photos</label>
+      <div class="row">
+        <input type="text" id="output" placeholder="/Volumes/MyDrive/Photos - Selected" autocomplete="off" spellcheck="false">
+        <button type="button" class="button pick" data-target="output">Choose…</button>
+      </div>
+      <div class="hint">Picks go into a <b>Selected</b> folder inside this one. Your progress is saved here too,
+        so you can stop anytime and carry on later — even from another computer.</div>
+    </div>
+
+    <div class="field">
+      <label for="target">3. How many photos do you want to end up with?</label>
+      <input type="number" id="target" min="1" value="500" style="max-width:160px">
+    </div>
+
+    <div class="field">
+      <label>4. When you swipe right (select)</label>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="selectMode" value="copy" checked>
+          <span>Copy to “Selected” <small>Recommended. Originals stay where they are.</small></span></label>
+        <label class="choice"><input type="radio" name="selectMode" value="move">
+          <span>Move to “Selected” <small>Uses no extra space. Undo moves it back.</small></span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>5. When you swipe left (reject)</label>
+      <div class="choices">
+        <label class="choice"><input type="radio" name="rejectMode" value="none" checked>
+          <span>Leave it where it is <small>Recommended. Just remembered as rejected.</small></span></label>
+        <label class="choice"><input type="radio" name="rejectMode" value="copy">
+          <span>Copy to “Rejected” <small>Needs as much free space as the rejected photos.</small></span></label>
+        <label class="choice"><input type="radio" name="rejectMode" value="move">
+          <span>Move to “Rejected”</span></label>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="sort">6. Order</label>
+      <select id="sort" style="max-width:320px">
+        <option value="name">By folder and file name</option>
+        <option value="date">By date (oldest first)</option>
+      </select>
+    </div>
+
+    <button type="submit" class="button primary" id="start">Start swiping</button>
+  </form>
+</div>
+<script src="/static/setup.js"></script>
+</body>
+</html>

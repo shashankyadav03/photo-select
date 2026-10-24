@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d10">
+<title>Photo Select</title>
+<link rel="manifest" href="/static/manifest.webmanifest">
+<link rel="icon" href="/static/icon.svg">
+<link rel="apple-touch-icon" href="/static/icon-180.png">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="swipe-page">
+<header class="stats">
+  <div class="stat sel"><b id="n-sel">0</b><span id="n-target">/ 500 selected</span></div>
+  <div class="stat rej"><b id="n-rej">0</b><span>rejected</span></div>
+  <div class="stat may"><b id="n-may">0</b><span>maybe</span></div>
+  <div class="stat left"><b id="n-left">0</b><span>to go</span></div>
+  <a id="setup-link" class="setup-link" href="/setup" hidden title="Settings">⚙︎</a>
+</header>
+<div class="progress"><div id="bar-seen"></div><div id="bar-sel"></div></div>
+
+<main id="stage">
+  <div class="card back"><img id="img-back" alt=""></div>
+  <div class="card front" id="card">
+    <img id="img-front" alt="" draggable="false">
+    <div class="no-preview" id="no-preview" hidden>Preview not available<br><small>you can still swipe</small></div>
+    <div class="stamp yes" id="stamp-yes">YES</div>
+    <div class="stamp no" id="stamp-no">NO</div>
+    <div class="stamp maybe" id="stamp-maybe">MAYBE</div>
+  </div>
+  <div class="message" id="message" hidden></div>
+  <div class="toast" id="toast"></div>
+</main>
+
+<footer>
+  <div class="info" id="info"></div>
+  <div class="buttons">
+    <button class="btn undo" id="btn-undo" title="Undo (Z)">↶</button>
+    <button class="btn no" id="btn-no" title="Reject (←)">✕</button>
+    <button class="btn maybe" id="btn-maybe" title="Maybe later (↑)">?</button>
+    <button class="btn yes" id="btn-yes" title="Select (→)">♥</button>
+  </div>
+</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>
