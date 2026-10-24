@@ -14,6 +14,15 @@ type Photo struct {
 	Rel     string // slash-separated path relative to the source folder
 	ModTime time.Time
 	Size    int64
+	Taken   time.Time // EXIF capture time; zero if unknown
+}
+
+// When returns the best known date for a photo: capture time, else file time.
+func (p Photo) When() time.Time {
+	if !p.Taken.IsZero() {
+		return p.Taken
+	}
+	return p.ModTime
 }
 
 var photoExts = map[string]bool{
@@ -79,11 +88,11 @@ func Scan(root, exclude string, progress func(n int)) ([]Photo, error) {
 }
 
 // SortPhotos orders photos by "name" (folder, then natural filename order so
-// IMG_2 comes before IMG_10) or by "date" (file modification time).
+// IMG_2 comes before IMG_10) or by "date" (capture time, else file time).
 func SortPhotos(photos []Photo, by string) {
 	sort.SliceStable(photos, func(i, j int) bool {
-		if by == "date" && !photos[i].ModTime.Equal(photos[j].ModTime) {
-			return photos[i].ModTime.Before(photos[j].ModTime)
+		if wi, wj := photos[i].When(), photos[j].When(); by == "date" && !wi.Equal(wj) {
+			return wi.Before(wj)
 		}
 		return naturalLess(photos[i].Rel, photos[j].Rel)
 	})

@@ -19,6 +19,7 @@ Swipe-to-select photo culling: runs on the computer holding a big photo library 
 - `app.go`: project config, scan orchestration, decide/undo, queue order, state for the UI
 - `session.go`: the decision log (replay, undo lines, torn-line tolerance)
 - `library.go`: folder scan + natural sort; `fileops.go`: copy/move/unique names/path cleanup
+- `meta.go`: EXIF capture date + duplicate fingerprints (cached in `.photo-select/meta.json`), dedupe of identical files and RAW+JPEG pairs
 - `preview.go`: macOS `sips` previews (HEIC/RAW/large JPEG → 2048px JPEG), cached in the user cache dir
 - `server.go`: HTTP routes; `web/`: swipe page (`index.html`, `app.js`), Mac setup page (`setup.*`)
 
@@ -33,6 +34,8 @@ Swipe-to-select photo culling: runs on the computer holding a big photo library 
 - exFAT drives contain `._*` AppleDouble files; the scanner skips hidden files for this reason.
 - In move mode, moved photos vanish from the source scan; `App.scan` re-adds them from the log.
 - `sips` only exists on macOS; elsewhere originals are served as-is.
+- File mtimes on copied drives are meaningless; date order uses EXIF DateTimeOriginal.
+- Picks/rejects keep their source sub-folder under `Selected/` / `Rejected/`.
 
 ## Out of bounds
 - Don't touch a user's real photo folders when testing; generate fixtures in temp dirs.

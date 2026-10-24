@@ -66,7 +66,8 @@ function render(s) {
     return showMessage(`⚠️ ${esc(s.error)}` + (s.isLocal ? '<br><a href="/setup">Open settings →</a>' : ''));
   }
   if (s.scanning) {
-    return showMessage(`Finding photos…<br><b>${fmt(s.scanned)}</b> so far`);
+    return showMessage(`${esc(s.phase || 'Finding photos')}…<br><b>${fmt(s.scanned)}</b> so far` +
+      '<br><small>First time on a big drive takes a few minutes.</small>');
   }
   if (s.total === 0) {
     return showMessage('No photos found in that folder.' + (s.isLocal ? '<br><a href="/setup">Choose another folder →</a>' : ''));
