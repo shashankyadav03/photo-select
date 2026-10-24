@@ -31,10 +31,11 @@ function showStatus(s) {
   $('urls').innerHTML = (s.urls || []).map((u) => `<div>${u}</div>`).join('') ||
     '<small>Couldn’t find a Wi-Fi address. Is this computer connected to Wi-Fi?</small>';
   let line = '';
-  if (s.scanning) line = `Finding photos… ${s.scanned.toLocaleString()} so far`;
+  if (s.scanning) line = `${s.phase || 'Finding photos'}… ${s.scanned.toLocaleString()} so far`;
   else if (s.configured && !s.error) {
     line = `${s.total.toLocaleString()} photos · ${s.selected.toLocaleString()} selected · ` +
-      `${s.rejected.toLocaleString()} rejected · ${s.maybe.toLocaleString()} maybe · ${s.undecided.toLocaleString()} to go`;
+      `${s.rejected.toLocaleString()} rejected · ${s.maybe.toLocaleString()} maybe · ${s.undecided.toLocaleString()} to go` +
+      (s.hidden ? ` · ${s.hidden.toLocaleString()} duplicates skipped` : '');
   }
   $('progress-line').textContent = line;
   if (s.error) showError(s.error);

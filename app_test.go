@@ -103,14 +103,14 @@ func TestDecideCopyRejectUndoAndResume(t *testing.T) {
 	if err := a.Decide(current(t, a), OpMaybe); err != nil { // 2024/clip.heic
 		t.Fatal(err)
 	}
-	if err := a.Decide(current(t, a), OpSelect); err != nil { // 2024/IMG_2.JPG: name clash
+	if err := a.Decide(current(t, a), OpSelect); err != nil { // 2024/IMG_2.JPG: same name, own sub-folder
 		t.Fatal(err)
 	}
-	if b, _ := os.ReadFile(filepath.Join(out, "Selected", "IMG_2.JPG")); string(b) != "a2" {
+	if b, _ := os.ReadFile(filepath.Join(out, "Selected", "2023", "IMG_2.JPG")); string(b) != "a2" {
 		t.Fatalf("first copy wrong: %q", b)
 	}
-	if b, _ := os.ReadFile(filepath.Join(out, "Selected", "IMG_2 (2).JPG")); string(b) != "b2" {
-		t.Fatalf("clashing copy wrong: %q", b)
+	if b, _ := os.ReadFile(filepath.Join(out, "Selected", "2024", "IMG_2.JPG")); string(b) != "b2" {
+		t.Fatalf("second copy wrong: %q", b)
 	}
 	if !exists(filepath.Join(src, "2023", "IMG_2.JPG")) {
 		t.Fatal("copy mode must keep the original")
@@ -130,7 +130,7 @@ func TestDecideCopyRejectUndoAndResume(t *testing.T) {
 	if err := a.Undo(); err != nil {
 		t.Fatal(err)
 	}
-	if exists(filepath.Join(out, "Selected", "IMG_2 (2).JPG")) {
+	if exists(filepath.Join(out, "Selected", "2024", "IMG_2.JPG")) {
 		t.Fatal("undo should delete the copy")
 	}
 	if got := current(t, a); got != "2024/IMG_2.JPG" {
@@ -163,13 +163,13 @@ func TestMoveModeAndResume(t *testing.T) {
 	if err := a.Decide(current(t, a), OpReject); err != nil {
 		t.Fatal(err)
 	}
-	if exists(filepath.Join(src, "2023", "IMG_2.JPG")) || !exists(filepath.Join(out, "Selected", "IMG_2.JPG")) {
+	if exists(filepath.Join(src, "2023", "IMG_2.JPG")) || !exists(filepath.Join(out, "Selected", "2023", "IMG_2.JPG")) {
 		t.Fatal("select should move the file")
 	}
-	if !exists(filepath.Join(out, "Rejected", "IMG_10.jpg")) {
+	if !exists(filepath.Join(out, "Rejected", "2023", "IMG_10.jpg")) {
 		t.Fatal("reject should move the file")
 	}
-	if got := a.PhotoSrc(first); got != filepath.Join(out, "Selected", "IMG_2.JPG") {
+	if got := a.PhotoSrc(first); got != filepath.Join(out, "Selected", "2023", "IMG_2.JPG") {
 		t.Fatalf("moved photo located at %s", got)
 	}
 
@@ -183,7 +183,7 @@ func TestMoveModeAndResume(t *testing.T) {
 	if err := b.Undo(); err != nil {
 		t.Fatal(err)
 	}
-	if !exists(filepath.Join(src, "2023", "IMG_10.jpg")) || exists(filepath.Join(out, "Rejected", "IMG_10.jpg")) {
+	if !exists(filepath.Join(src, "2023", "IMG_10.jpg")) || exists(filepath.Join(out, "Rejected", "2023", "IMG_10.jpg")) {
 		t.Fatal("undo should move the file back")
 	}
 }

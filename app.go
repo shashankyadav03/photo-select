@@ -69,7 +69,9 @@ type App struct {
 	index    map[string]int
 	sess     *Session
 	scanning bool
+	phase    string // what the scan is doing, for the progress message
 	scanned  int
+	hidden   int // duplicates / lower-quality versions left out
 	err      string
 	gen      int
 	prev     *Previewer
@@ -145,7 +147,7 @@ func (a *App) Start(c Config) error {
 	}
 	a.cfg, a.sess = &c, sess
 	a.photos, a.index = nil, nil
-	a.scanning, a.scanned, a.err = true, 0, ""
+	a.scanning, a.phase, a.scanned, a.hidden, a.err = true, "Finding photos", 0, 0, ""
 	a.gen++
 	gen := a.gen
 	a.mu.Unlock()
@@ -155,23 +157,43 @@ func (a *App) Start(c Config) error {
 }
 
 func (a *App) scan(gen int, c Config) {
-	photos, err := Scan(c.Source, c.Output, func(n int) {
+	progress := func(n int) {
 		a.mu.Lock()
 		if a.gen == gen {
 			a.scanned = n
 		}
 		a.mu.Unlock()
-	})
+	}
+	photos, err := Scan(c.Source, c.Output, progress)
+	if err != nil {
+		a.mu.Lock()
+		if a.gen == gen {
+			a.scanning = false
+			a.err = fmt.Sprintf("couldn't read photo folder: %v", err)
+		}
+		a.mu.Unlock()
+		return
+	}
+	a.mu.Lock()
+	if a.gen != gen {
+		a.mu.Unlock()
+		return
+	}
+	a.phase, a.scanned = fmt.Sprintf("Reading dates of %d photos", len(photos)), 0
+	sess := a.sess
+	a.mu.Unlock()
+	cache := Enrich(c.Source, c.Output, photos, progress)
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	if a.gen != gen {
 		return
 	}
+	photos, a.hidden = Dedupe(c.Source, photos, cache, func(rel string) bool {
+		_, _, ok := sess.Decision(rel)
+		return ok
+	})
+	_ = cache.save(c.Output) // keeps the duplicate checks for next time
 	a.scanning = false
-	if err != nil {
-		a.err = fmt.Sprintf("couldn't read photo folder: %v", err)
-		return
-	}
 	// Photos moved out of the source folder are still part of the project.
 	seen := make(map[string]bool, len(photos))
 	for _, p := range photos {
@@ -283,7 +305,8 @@ func (a *App) Decide(rel, op string) error {
 	e := Entry{Op: op, Path: rel}
 	src := a.locateLocked(rel)
 	if mode == "copy" || mode == "move" {
-		dst := uniqueDest(filepath.Join(a.cfg.Output, folder), path.Base(rel))
+		// Keep the photo's sub-folder, e.g. Selected/2023/Goa/IMG_1.jpg.
+		dst := uniqueDest(filepath.Join(a.cfg.Output, folder, filepath.FromSlash(path.Dir(rel))), path.Base(rel))
 		var err error
 		if mode == "move" {
 			a.prev.Forget(src)
@@ -348,7 +371,9 @@ type PhotoInfo struct {
 type State struct {
 	Configured bool        `json:"configured"`
 	Scanning   bool        `json:"scanning"`
+	Phase      string      `json:"phase,omitempty"`
 	Scanned    int         `json:"scanned"`
+	Hidden     int         `json:"hidden"`
 	Error      string      `json:"error,omitempty"`
 	Total      int         `json:"total"`
 	Selected   int         `json:"selected"`
@@ -367,7 +392,7 @@ type State struct {
 func (a *App) State() State {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-	s := State{Configured: a.cfg != nil, Scanning: a.scanning, Scanned: a.scanned, Error: a.err, Config: a.cfg}
+	s := State{Configured: a.cfg != nil, Scanning: a.scanning, Phase: a.phase, Scanned: a.scanned, Hidden: a.hidden, Error: a.err, Config: a.cfg}
 	if a.cfg != nil {
 		s.Target = a.cfg.Target
 	}
@@ -403,8 +428,8 @@ func (a *App) State() State {
 		if info.Folder == "." {
 			info.Folder = ""
 		}
-		if !p.ModTime.IsZero() {
-			info.Date = p.ModTime.Format("2 Jan 2006")
+		if w := p.When(); !w.IsZero() {
+			info.Date = w.Format("2 Jan 2006, 15:04")
 		}
 		if k == 0 {
 			s.Current = &info
