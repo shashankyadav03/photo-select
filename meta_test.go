@@ -59,7 +59,7 @@ func TestDateOrderDedupeAndSubfolders(t *testing.T) {
 	put("A/DSC1.JPG", late)
 	put("A/DSC1_1.JPG", late) // byte-identical copy: hidden
 	put("A/DSC1_2.JPG", fakeJPEG("2020:05:01 10:00:00", "other camera"))
-	put("B/IMG_9.JPG", fakeJPEG("2018:01:01 08:00:00", "early"))
+	put("B/IMG_9.JPG", fakeJPEG("2021:01:01 08:00:00", "early"))
 	put("B/IMG_9.CR2", []byte("raw version")) // RAW beats its JPEG
 	a := startApp(t, Config{Source: src, Output: out, Sort: "date"})
 
@@ -89,5 +89,26 @@ func TestDateOrderDedupeAndSubfolders(t *testing.T) {
 	b := startApp(t, Config{Source: src, Output: out, Sort: "date"})
 	if s := b.State(); s.Total != 3 || s.Hidden != 2 || s.Selected != 1 {
 		t.Fatalf("after resume: %+v", s)
+	}
+}
+
+func TestUnknownDatesSortLast(t *testing.T) {
+	d := func(y int) time.Time { return time.Date(y, 6, 1, 0, 0, 0, 0, time.UTC) }
+	photos := []Photo{
+		{Rel: "DSC1.JPG", Taken: d(2017)}, // camera clock reset
+		{Rel: "B.JPG", Taken: d(2025)},
+		{Rel: "A.JPG", Taken: d(2024)},
+		{Rel: "DSC0.JPG", Taken: d(2017)},
+	}
+	SortPhotos(photos)
+	var got []string
+	for _, p := range photos {
+		got = append(got, p.Rel)
+	}
+	want := []string{"A.JPG", "B.JPG", "DSC0.JPG", "DSC1.JPG"}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("got %v want %v", got, want)
+		}
 	}
 }
