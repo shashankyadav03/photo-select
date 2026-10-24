@@ -37,6 +37,14 @@ func newProject(t *testing.T) (src, out string) {
 	write(t, filepath.Join(src, "2024", "._IMG_2.jpg"), "appledouble")
 	write(t, filepath.Join(src, "2024", "notes.txt"), "not a photo")
 	write(t, filepath.Join(src, ".Trashes", "x.jpg"), "trash")
+	// Sort is by date, so give the photos times in the order the tests expect.
+	base := time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)
+	for i, rel := range []string{"2023/IMG_2.JPG", "2023/IMG_10.jpg", "2024/clip.heic", "2024/IMG_2.JPG"} {
+		p := filepath.Join(src, rel)
+		if err := os.Chtimes(p, base.Add(time.Duration(i)*time.Hour), base.Add(time.Duration(i)*time.Hour)); err != nil {
+			t.Fatal(err)
+		}
+	}
 	return src, out
 }
 
@@ -250,7 +258,7 @@ func TestNaturalLess(t *testing.T) {
 	for i, p := range in {
 		photos[i] = Photo{Rel: p}
 	}
-	SortPhotos(photos, "name")
+	SortPhotos(photos)
 	var got []string
 	for _, p := range photos {
 		got = append(got, p.Rel)
