@@ -87,11 +87,11 @@ func Scan(root, exclude string, progress func(n int)) ([]Photo, error) {
 	return photos, err
 }
 
-// SortPhotos orders photos by "name" (folder, then natural filename order so
-// IMG_2 comes before IMG_10) or by "date" (capture time, else file time).
-func SortPhotos(photos []Photo, by string) {
+// SortPhotos orders photos oldest first by capture time (else file time),
+// falling back to natural filename order for photos taken at the same moment.
+func SortPhotos(photos []Photo) {
 	sort.SliceStable(photos, func(i, j int) bool {
-		if wi, wj := photos[i].When(), photos[j].When(); by == "date" && !wi.Equal(wj) {
+		if wi, wj := photos[i].When(), photos[j].When(); !wi.Equal(wj) {
 			return wi.Before(wj)
 		}
 		return naturalLess(photos[i].Rel, photos[j].Rel)

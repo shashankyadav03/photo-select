@@ -21,7 +21,7 @@ type Config struct {
 	Target     int    `json:"target"`
 	SelectMode string `json:"selectMode"` // copy | move
 	RejectMode string `json:"rejectMode"` // none | copy | move
-	Sort       string `json:"sort"`       // name | date
+	Sort       string `json:"sort"`       // always "date" (kept so old config files still load)
 }
 
 const (
@@ -55,9 +55,7 @@ func (c *Config) Validate() error {
 	if c.RejectMode != "copy" && c.RejectMode != "move" {
 		c.RejectMode = "none"
 	}
-	if c.Sort != "date" {
-		c.Sort = "name"
-	}
+	c.Sort = "date"
 	return nil
 }
 
@@ -211,7 +209,7 @@ func (a *App) scan(gen int, c Config) {
 			}
 		}
 	}
-	SortPhotos(photos, c.Sort)
+	SortPhotos(photos)
 	a.photos = photos
 	a.index = make(map[string]int, len(photos))
 	for i, p := range photos {

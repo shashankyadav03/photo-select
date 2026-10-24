@@ -21,7 +21,6 @@ function fill(cfg) {
   $('output').value = cfg.output || '';
   outputTouched = !!cfg.output;
   $('target').value = cfg.target || 500;
-  $('sort').value = cfg.sort || 'name';
   form.querySelectorAll('input[name=selectMode]').forEach((r) => { r.checked = r.value === (cfg.selectMode || 'copy'); });
   form.querySelectorAll('input[name=rejectMode]').forEach((r) => { r.checked = r.value === (cfg.rejectMode || 'none'); });
 }
@@ -93,7 +92,6 @@ form.addEventListener('submit', async (e) => {
       target: parseInt($('target').value, 10) || 500,
       selectMode: form.querySelector('input[name=selectMode]:checked').value,
       rejectMode: form.querySelector('input[name=rejectMode]:checked').value,
-      sort: $('sort').value,
     };
     const r = await fetch('/api/setup', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
