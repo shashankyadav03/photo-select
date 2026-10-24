@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets/
+node_modules/
+__pycache__/
+.venv/
+.DS_Store
+.claude/settings.local.json
