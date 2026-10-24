@@ -1,0 +1,13 @@
+{
+  "name": "Photo Select",
+  "short_name": "Photo Select",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d0d10",
+  "theme_color": "#0d0d10",
+  "icons": [
+    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml" },
+    { "src": "/static/icon-180.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
