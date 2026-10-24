@@ -17,12 +17,22 @@ type Photo struct {
 	Taken   time.Time // EXIF capture time; zero if unknown
 }
 
-// When returns the best known date for a photo: capture time, else file time.
+// Camera clocks that lost their battery restart at 1 Jan 2016/2017, and file
+// times on a copied drive are copy dates, so anything older than this is
+// treated as "date unknown" rather than trusted.
+var earliestPlausible = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+// When returns the best known date for a photo: capture time, else file time
+// (only for files with no EXIF at all). Zero means the date is unknown.
 func (p Photo) When() time.Time {
+	t := p.ModTime
 	if !p.Taken.IsZero() {
-		return p.Taken
+		t = p.Taken
 	}
-	return p.ModTime
+	if t.Before(earliestPlausible) {
+		return time.Time{}
+	}
+	return t
 }
 
 var photoExts = map[string]bool{
@@ -87,11 +97,15 @@ func Scan(root, exclude string, progress func(n int)) ([]Photo, error) {
 	return photos, err
 }
 
-// SortPhotos orders photos oldest first by capture time (else file time),
-// falling back to natural filename order for photos taken at the same moment.
+// SortPhotos orders photos oldest first by capture time (else file time).
+// Photos with an unknown date come last, and ties fall back to natural
+// filename order.
 func SortPhotos(photos []Photo) {
 	sort.SliceStable(photos, func(i, j int) bool {
 		if wi, wj := photos[i].When(), photos[j].When(); !wi.Equal(wj) {
+			if wi.IsZero() || wj.IsZero() {
+				return wj.IsZero()
+			}
 			return wi.Before(wj)
 		}
 		return naturalLess(photos[i].Rel, photos[j].Rel)

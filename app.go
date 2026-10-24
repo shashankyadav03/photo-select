@@ -428,6 +428,8 @@ func (a *App) State() State {
 		}
 		if w := p.When(); !w.IsZero() {
 			info.Date = w.Format("2 Jan 2006, 15:04")
+		} else {
+			info.Date = "date unknown"
 		}
 		if k == 0 {
 			s.Current = &info
