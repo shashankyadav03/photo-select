@@ -11,3 +11,33 @@ __pycache__/
 .claude/settings.local.json
 dist/
 /photo-select
+
+# Personal Claude Code config (not part of the app)
+.claude/
+
+# Never commit photos, picks or progress (in case a library or output folder sits inside the repo)
+photos/
+Photos/
+Selected/
+Rejected/
+.photo-select/
+*.jsonl
+*.csv
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[hH][eE][iI][cC]
+*.[hH][eE][iI][fF]
+*.[pP][nN][gG]
+*.[tT][iI][fF]
+*.[tT][iI][fF][fF]
+*.[dD][nN][gG]
+*.[cC][rR][23]
+*.[nN][eE][fF]
+*.[aA][rR][wW]
+*.[rR][aA][fF]
+*.[oO][rR][fF]
+*.[rR][wW]2
+*.[mM][oO][vV]
+*.[mM][pP]4
+# ...except the app's own icons
+!web/*.png

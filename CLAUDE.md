@@ -6,7 +6,7 @@ Swipe-to-select photo culling: runs on the computer holding a big photo library 
 - Go 1.22+, standard library only (no third-party modules). Single binary with the web UI embedded (`//go:embed web`).
 - Frontend: plain HTML/CSS/JS in `web/`, no build step.
 - No database: progress is an append-only JSONL log in `<output>/.photo-select/decisions.jsonl`.
-- No LLM calls (the `.claude/rules/llm-calls.md` rules don't apply yet).
+- No LLM calls.
 
 ## Commands
 - Dev: `go run .` (opens http://localhost:8787; `-no-browser`, `-port N`)

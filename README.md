@@ -7,23 +7,61 @@ Go through a huge photo library one photo at a time, Tinder-style, and keep only
 - **Swipe up** for *maybe*. You see it again after you've been through everything else.
 - **↶** undoes the last swipe, including the copy.
 
-It runs on the computer that has the photos (for example a MacBook with an external drive). You swipe on your phone over Wi-Fi, and you can mirror the phone to a TV so everyone can vote. Progress is saved after every swipe, so you can stop and carry on later. It was built for picking about 500 photos out of 25,000.
+It runs on the computer that has the photos (a Mac, Windows or Linux machine, for example a MacBook with an external drive). You swipe on your phone over Wi-Fi, and you can mirror the phone to a TV so everyone can vote. Progress is saved after every swipe, so you can stop and carry on later. It was built for picking about 500 photos out of 25,000.
 
-## Quick start (Mac)
+## Get it
 
-1. Download the zip for your Mac from the [Releases page](../../releases): **mac-apple-silicon** for M1/M2/M3/M4 Macs (MacBook Air from 2020 on), **mac-intel** for older Macs. Unzip it.
-2. Plug in the drive with your photos.
-3. **Right-click** `Start Photo Select.command` → **Open** → **Open**. You only need the right-click the first time, because the app isn't from the App Store. A Terminal window opens. Keep it open while you swipe.
-4. A setup page opens in your browser. Choose:
-   - the folder with all your photos (sub-folders are included)
+Pick **one** of these.
+
+**A. Download the app (easiest, no coding).** Open the [Releases page](../../releases) and download the zip for your computer:
+**mac-apple-silicon** (M1/M2/M3/M4 Macs, MacBook Air from 2020 on), **mac-intel** (older Macs), **windows**, or **linux**. Unzip it.
+
+**B. Run it from this repo.** You need [Go](https://go.dev/dl/) 1.22 or newer, installed once.
+
+```bash
+git clone https://github.com/shashankyadav03/photo-select.git
+```
+
+```bash
+cd photo-select && go run .
+```
+
+**C. Make your own copy.** Click **Fork** on GitHub, then use option B with your fork's URL. To publish your own downloadable zips, push a tag (`git tag v1.0.0 && git push origin v1.0.0`) and GitHub Actions attaches them to a Release on your fork.
+
+## Your photos stay on your computer
+
+You don't put photos into this repo. Keep them wherever they already are (an external drive, `~/Pictures`, a folder on the desktop) and choose that folder on the setup page. The app reads that folder in place and writes its picks to the output folder you choose. Nothing is uploaded anywhere. Phones on your Wi-Fi only see the photos while the app is running.
+
+Any folder layout works. Sub-folders are included, and photos are shown oldest first by the date the camera recorded. Picks keep their sub-folder, so `Trips/Goa/IMG_1.JPG` ends up at `Selected/Trips/Goa/IMG_1.JPG`:
+
+```
+My Photos/                 <- choose this as the photo folder
+  2023/ ...
+  Trips/Goa/IMG_1.JPG
+My Photos - Selected/      <- suggested output folder (created for you)
+  Selected/Trips/Goa/IMG_1.JPG
+  .photo-select/           <- saved progress, keep it to carry on later
+```
+
+If you cloned the repo, **don't choose folders inside the repo folder**. `.gitignore` blocks photos and progress files anyway, just in case.
+
+## Start swiping
+
+1. Plug in the drive with your photos, if they're on one.
+2. Start the app:
+   - **Mac download:** **right-click** `Start Photo Select.command` → **Open** → **Open**. You only need the right-click the first time, because the app isn't from the App Store. A Terminal window opens. Keep it open while you swipe.
+   - **Windows download:** double-click `photo-select.exe`. If SmartScreen warns you, click **More info** → **Run anyway**.
+   - **From the repo:** `go run .`
+3. A setup page opens in your browser (or go to http://localhost:8787). Choose:
+   - the folder with all your photos
    - where the selected photos should go (a new folder next to it is suggested)
    - your goal, e.g. 500
-5. Click **Start swiping**. The page shows an address like `http://192.168.1.23:8787`.
-6. On your iPhone, on the **same Wi-Fi**, open that address in Safari.
-   - Tip: Share → **Add to Home Screen** gives you a full-screen app.
-7. To vote on the TV: iPhone Control Centre → **Screen Mirroring** → pick your TV (AirPlay TV or Apple TV). Turning the phone sideways fills more of the TV.
+4. Click **Start swiping**. The page shows an address like `http://192.168.1.23:8787`.
+5. On your phone, on the **same Wi-Fi**, open that address in the browser.
+   - Tip on iPhone: Share → **Add to Home Screen** gives you a full-screen app.
+6. To vote on the TV: iPhone Control Centre → **Screen Mirroring** → pick your TV (AirPlay TV or Apple TV). Turning the phone sideways fills more of the TV.
 
-To quit, close the Terminal window. Next time, open the app again and it carries on where you left off.
+To quit, close the Terminal window (or press Ctrl+C). Next time, start the app again and choose the same folders. It carries on where you left off.
 
 > **"Can't be opened because Apple cannot check it for malicious software"?**
 > Right-click the file → **Open** instead of double-clicking. Or open Terminal in the unzipped folder and run `xattr -dr com.apple.quarantine .` once.
@@ -81,3 +119,5 @@ scripts/build.sh v1.0.0  # zips for Mac (Apple Silicon + Intel), Windows, Linux 
 ```
 
 Pushing a tag like `v1.0.0` runs CI and attaches the zips to a GitHub Release.
+
+Pull requests are welcome. Run `gofmt -l . && go vet ./... && go test -race ./...` before opening one.
