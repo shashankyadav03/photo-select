@@ -26,3 +26,4 @@ build darwin arm64 mac-apple-silicon
 build darwin amd64 mac-intel
 build windows amd64 windows
 build linux amd64 linux
+build linux arm64 linux-arm64

@@ -11,7 +11,9 @@ It runs on the computer that has the photos (a Mac, Windows or Linux machine, fo
 
 ## Get it
 
-Pick **one** of these.
+**Easiest: the homepage.** If someone sent you a Photo Select link, open it on your computer and follow the three steps there. It installs the app with one copy-paste command. (Hosting that page yourself: see [docs/AZURE.md](docs/AZURE.md).)
+
+Or pick **one** of these.
 
 **A. Download the app (easiest, no coding).** Open the [Releases page](../../releases) and download the zip for your computer:
 **mac-apple-silicon** (M1/M2/M3/M4 Macs, MacBook Air from 2020 on), **mac-intel** (older Macs), **windows**, or **linux**. Unzip it.
@@ -116,7 +118,10 @@ Written in Go with no dependencies outside the standard library. The web UI in `
 go run .                 # run locally
 go test -race ./...      # tests
 scripts/build.sh v1.0.0  # zips for Mac (Apple Silicon + Intel), Windows, Linux into dist/
+scripts/build-site.sh    # the friends homepage (site/, React) with those zips bundled in
 ```
+
+The homepage in `site/` deploys to Azure Static Web Apps on every push to `main`; see [docs/AZURE.md](docs/AZURE.md).
 
 Pushing a tag like `v1.0.0` runs CI and attaches the zips to a GitHub Release.
 

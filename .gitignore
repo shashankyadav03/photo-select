@@ -41,3 +41,6 @@ Rejected/
 *.[mM][pP]4
 # ...except the app's own icons
 !web/*.png
+
+# Friends homepage build output (zips are bundled in at deploy time)
+site/public/downloads/
