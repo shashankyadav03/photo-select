@@ -1,7 +1,7 @@
 # Hosting the friends homepage on Azure
 
 The homepage in `site/` is a React (Vite) page that friends open to install Photo Select.
-It detects their computer, gives them a one-line installer (or a zip), and walks them through
+It detects their computer, gives them the right zip download, and walks them through
 choosing a photo folder and swiping. The app zips are built from this repo and hosted on the
 same site, so friends never need Git, Go or GitHub.
 
@@ -51,10 +51,7 @@ Optional: **Custom domains** in the Static Web App lets you use your own domain 
 
 ## What friends see
 
-1. **Install:** one copy-paste command for Mac/Linux (Terminal) or Windows (PowerShell), or a zip download.
-   The command downloads the right build from the site, installs it (`~/PhotoSelect` or
-   `%LOCALAPPDATA%\PhotoSelect`), adds a Desktop launcher and starts the app.
-   Files fetched this way aren't quarantined, so there are no Gatekeeper/SmartScreen warnings.
+1. **Install:** a download button for their computer (Mac Apple/Intel, Windows, Linux) plus the steps to open it.
 2. **Choose folders:** the app opens its setup page at `http://localhost:8787`; they paste or pick their photo folder.
 3. **Swipe:** they open the address it shows on their phone, on the same Wi-Fi.
 

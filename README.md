@@ -11,7 +11,7 @@ It runs on the computer that has the photos (a Mac, Windows or Linux machine, fo
 
 ## Get it
 
-**Easiest: the homepage.** If someone sent you a Photo Select link, open it on your computer and follow the three steps there. It installs the app with one copy-paste command. (Hosting that page yourself: see [docs/AZURE.md](docs/AZURE.md).)
+**Easiest: the homepage.** If someone sent you a Photo Select link, open it on your computer and follow the three steps there. It detects your computer and gives you the right download. (Hosting that page yourself: see [docs/AZURE.md](docs/AZURE.md).)
 
 Or pick **one** of these.
 

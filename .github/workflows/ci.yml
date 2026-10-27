@@ -27,7 +27,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
-      - run: bash -n site/public/install.sh
       - run: npm ci --no-audit --no-fund && npm run build
         working-directory: site
 
