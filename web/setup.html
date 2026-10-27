@@ -7,86 +7,143 @@
 <link rel="icon" href="/static/icon.svg">
 <link rel="stylesheet" href="/static/style.css">
 </head>
-<body>
-<div class="setup-page">
-  <h1>📸 Photo Select</h1>
-  <p class="lead">Swipe through your photos on your phone. Right = keep, left = skip.</p>
+<body class="setup-body">
+<main class="wizard">
+  <header class="brand">
+    <img src="/static/icon.svg" alt="" width="52" height="52">
+    <div>
+      <h1>Photo Select</h1>
+      <p>Swipe right to keep, left to skip.</p>
+    </div>
+  </header>
 
-  <div id="not-local" class="panel" hidden>
+  <section id="not-local" class="wcard" hidden>
     <h2>Settings live on the computer</h2>
-    Open <b>http://localhost:<span id="port"></span>/setup</b> on the computer that has the photos.
-    <p><a href="/">← Back to swiping</a></p>
-  </div>
+    <p class="sub">Open <b>http://localhost:<span id="port"></span>/setup</b> on the computer that has the photos.</p>
+    <a class="button primary" href="/">← Back to swiping</a>
+  </section>
 
-  <div id="connect" class="panel" hidden>
-    <h2>Open this on your phone</h2>
-    <div class="urls" id="urls"></div>
-    <p class="progress-line" id="progress-line"></p>
-    <ol class="steps">
-      <li>Phone and computer on the same Wi-Fi.</li>
-      <li>In Safari, open the address above. Tip: Share → <i>Add to Home Screen</i> for full-screen.</li>
-      <li>To watch on the TV: Control Centre → <i>Screen Mirroring</i> → your TV.</li>
+  <!-- Returning visitor -->
+  <section id="home" class="wcard" hidden>
+    <h2>Welcome back 👋</h2>
+    <p class="sub" id="home-line"></p>
+    <div class="stats-row" id="home-stats"></div>
+    <div class="actions stack">
+      <a class="button primary big" href="/">Continue swiping</a>
+      <button type="button" class="button" id="home-phone">📱 Show phone address</button>
+      <button type="button" class="button ghost" id="home-change">Change folders or settings</button>
+    </div>
+  </section>
+
+  <div id="flow" hidden>
+    <ol class="stepper" id="stepper">
+      <li data-s="1"><span>1</span><b>Photos</b></li>
+      <li data-s="2"><span>2</span><b>Save to</b></li>
+      <li data-s="3"><span>3</span><b>Goal</b></li>
+      <li data-s="4"><span>4</span><b>Phone</b></li>
     </ol>
-    <p><a href="/">Open the swiper on this computer</a> (← → keys work too) · <a href="/api/export.csv">Download decisions (CSV)</a></p>
-  </div>
 
-  <form id="form">
     <div id="error" class="error" hidden></div>
 
-    <div class="field">
-      <label for="source">1. Folder with all your photos</label>
-      <div class="row">
+    <!-- 1 -->
+    <section class="wcard step" data-step="1">
+      <div class="emoji">📁</div>
+      <h2>Where are your photos?</h2>
+      <p class="sub">Pick the folder (or drive) that has them all. Sub-folders are included.</p>
+      <div class="picker">
+        <button type="button" class="button primary big pick" data-target="source">Choose folder…</button>
+        <div class="path" id="source-view">No folder chosen yet</div>
+      </div>
+      <details class="manual">
+        <summary>Or type the folder path</summary>
         <input type="text" id="source" placeholder="/Volumes/MyDrive/Photos" autocomplete="off" spellcheck="false">
-        <button type="button" class="button pick" data-target="source">Choose…</button>
-      </div>
-      <div class="hint">Sub-folders are included. Originals are never changed unless you pick “Move” below.</div>
-    </div>
+      </details>
+      <p class="hint">🔒 Your originals are never changed. Nothing is uploaded anywhere.</p>
+      <div class="actions"><span></span><button type="button" class="button primary" data-next>Next →</button></div>
+    </section>
 
-    <div class="field">
-      <label for="output">2. Where to put the selected photos</label>
-      <div class="row">
+    <!-- 2 -->
+    <section class="wcard step" data-step="2" hidden>
+      <div class="emoji">💾</div>
+      <h2>Where should your picks go?</h2>
+      <p class="sub">Photos you keep are copied into a <b>Selected</b> folder here. Your progress is saved here too, so you can stop anytime and carry on later.</p>
+      <div class="picker">
+        <button type="button" class="button big pick" data-target="output">Choose a different folder…</button>
+        <div class="path" id="output-view">—</div>
+      </div>
+      <details class="manual">
+        <summary>Or type the folder path</summary>
         <input type="text" id="output" placeholder="/Volumes/MyDrive/Photos - Selected" autocomplete="off" spellcheck="false">
-        <button type="button" class="button pick" data-target="output">Choose…</button>
+      </details>
+      <p class="hint">✨ We suggested a new folder next to your photos. It's created for you.</p>
+      <div class="actions"><button type="button" class="button" data-back>← Back</button><button type="button" class="button primary" data-next>Next →</button></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="wcard step" data-step="3" hidden>
+      <div class="emoji">🎯</div>
+      <h2>How many do you want to keep?</h2>
+      <p class="sub">A target helps you stay picky. You can swipe past it if you like.</p>
+      <div class="chips" id="chips">
+        <button type="button" class="chip" data-n="100">100</button>
+        <button type="button" class="chip" data-n="250">250</button>
+        <button type="button" class="chip" data-n="500">500</button>
+        <button type="button" class="chip" data-n="1000">1,000</button>
+        <input type="number" id="target" min="1" value="500" aria-label="Number of photos to keep">
       </div>
-      <div class="hint">Picks go into a <b>Selected</b> folder inside this one. Your progress is saved here too,
-        so you can stop anytime and carry on later — even from another computer.</div>
-    </div>
 
-    <div class="field">
-      <label for="target">3. How many photos do you want to end up with?</label>
-      <input type="number" id="target" min="1" value="500" style="max-width:160px">
-    </div>
+      <details class="manual">
+        <summary>More options (the defaults are fine)</summary>
+        <div class="opt">
+          <b>When you swipe right (keep)</b>
+          <label class="choice"><input type="radio" name="selectMode" value="copy" checked>
+            <span>Copy to “Selected” <small>Recommended. Originals stay where they are.</small></span></label>
+          <label class="choice"><input type="radio" name="selectMode" value="move">
+            <span>Move to “Selected” <small>Uses no extra space. Undo moves it back.</small></span></label>
+        </div>
+        <div class="opt">
+          <b>When you swipe left (skip)</b>
+          <label class="choice"><input type="radio" name="rejectMode" value="none" checked>
+            <span>Leave it where it is <small>Recommended. Just remembered as skipped.</small></span></label>
+          <label class="choice"><input type="radio" name="rejectMode" value="copy">
+            <span>Copy to “Rejected” <small>Needs as much free space as the skipped photos.</small></span></label>
+          <label class="choice"><input type="radio" name="rejectMode" value="move">
+            <span>Move to “Rejected”</span></label>
+        </div>
+      </details>
+      <div class="actions"><button type="button" class="button" data-back>← Back</button><button type="button" class="button primary big" id="start">Start ✓</button></div>
+    </section>
 
-    <div class="field">
-      <label>4. When you swipe right (select)</label>
-      <div class="choices">
-        <label class="choice"><input type="radio" name="selectMode" value="copy" checked>
-          <span>Copy to “Selected” <small>Recommended. Originals stay where they are.</small></span></label>
-        <label class="choice"><input type="radio" name="selectMode" value="move">
-          <span>Move to “Selected” <small>Uses no extra space. Undo moves it back.</small></span></label>
+    <!-- 4 -->
+    <section class="wcard step" data-step="4" hidden>
+      <div class="emoji">📱</div>
+      <h2>Now open it on your phone</h2>
+      <div class="scan" id="scan">
+        <div class="bar"><i id="scan-bar"></i></div>
+        <p id="scan-line">Getting your photos ready…</p>
       </div>
-    </div>
-
-    <div class="field">
-      <label>5. When you swipe left (reject)</label>
-      <div class="choices">
-        <label class="choice"><input type="radio" name="rejectMode" value="none" checked>
-          <span>Leave it where it is <small>Recommended. Just remembered as rejected.</small></span></label>
-        <label class="choice"><input type="radio" name="rejectMode" value="copy">
-          <span>Copy to “Rejected” <small>Needs as much free space as the rejected photos.</small></span></label>
-        <label class="choice"><input type="radio" name="rejectMode" value="move">
-          <span>Move to “Rejected”</span></label>
+      <div class="addr">
+        <small>On your phone's browser, go to</small>
+        <div id="urls" class="urls"></div>
       </div>
-    </div>
+      <ol class="phone-steps">
+        <li><span>📶</span>Put your phone on the <b>same Wi-Fi</b> as this computer.</li>
+        <li><span>🌐</span>Open <b>Safari</b> or <b>Chrome</b> and type the address above.</li>
+        <li><span>👉</span>Swipe! Tip: Share → <i>Add to Home Screen</i> for full-screen.</li>
+        <li><span>📺</span>For the TV: Control Centre → <i>Screen Mirroring</i> → your TV.</li>
+      </ol>
+      <div class="actions stack">
+        <a class="button primary big" href="/">Start swiping on this computer</a>
+        <button type="button" class="button ghost" data-goto="1">Change settings</button>
+      </div>
+    </section>
+  </div>
 
-    <button type="submit" class="button primary" id="start">Start swiping</button>
-  </form>
-
-  <p class="quit" id="quit-row" hidden>
-    <button type="button" class="button" id="quit">Quit Photo Select</button>
-    <small>Stops the app on this computer. Your progress is saved.</small>
-  </p>
-</div>
+  <footer class="foot" id="foot" hidden>
+    <a href="/api/export.csv">Download decisions (CSV)</a>
+    <button type="button" class="link" id="quit">Quit Photo Select</button>
+  </footer>
+</main>
 <script src="/static/setup.js"></script>
 </body>
 </html>
