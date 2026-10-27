@@ -262,3 +262,6 @@ details.alt summary { color: var(--accent); }
   border-top: 1px solid var(--line);
   color: var(--muted); font-size: 14px;
 }
+
+.substeps { margin: 8px 0 0; padding-left: 1.3em; list-style: lower-alpha; }
+.substeps li { margin: 0 0 6px; }

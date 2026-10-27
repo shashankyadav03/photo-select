@@ -40,3 +40,5 @@ Swipe-to-select photo culling: runs on the computer holding a big photo library 
 
 ## Out of bounds
 - Don't touch a user's real photo folders when testing; generate fixtures in temp dirs.
+- Mac builds are a `Photo Select.app` (`packaging/mac/`: icon + Info.plist), ad-hoc signed with `codesign`, so release/site workflows run on `macos-latest`. Unsigned bundles show "damaged" instead of "Open Anyway".
+- The Go binary can't handle the macOS quit Apple event (Dock → Quit hangs); the setup page's "Quit Photo Select" button (`POST /api/quit`, loopback-only) is the way to stop it.

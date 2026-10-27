@@ -15,6 +15,7 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 )
 
 //go:embed web
@@ -159,6 +160,16 @@ func (s *Server) Handler() http.Handler {
 			return
 		}
 		writeJSON(w, http.StatusOK, s.stateResp(r))
+	})
+
+	// Quit: the Mac app has no Terminal window to close, so the setup page offers a button.
+	mux.HandleFunc("POST /api/quit", func(w http.ResponseWriter, r *http.Request) {
+		if !isLocal(r) {
+			writeErr(w, http.StatusForbidden, "quit Photo Select on the computer running it")
+			return
+		}
+		writeJSON(w, http.StatusOK, map[string]bool{"ok": true})
+		go func() { time.Sleep(200 * time.Millisecond); os.Exit(0) }()
 	})
 
 	mux.HandleFunc("POST /api/pick-folder", func(w http.ResponseWriter, r *http.Request) {

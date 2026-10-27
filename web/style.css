@@ -117,3 +117,5 @@ input:focus, select:focus { outline: 2px solid var(--accent); border-color: tran
 .progress-line { color: var(--muted); }
 ol.steps { padding-left: 20px; color: var(--muted); }
 ol.steps li { margin-bottom: 6px; }
+
+.quit { margin-top: 2rem; display: flex; gap: .75rem; align-items: center; flex-wrap: wrap; }

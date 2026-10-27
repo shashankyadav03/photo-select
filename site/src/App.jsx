@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PLATFORMS, detectMacChip, detectOS } from './platform.js'
-import { CopyCommand, DownloadButton, Kbd, Steps, Tabs } from './components.jsx'
+import { CopyCommand, DownloadButton, Kbd, Note, Steps, Tabs } from './components.jsx'
 
 const LOCAL_URL = 'http://localhost:8787'
 const site = typeof window !== 'undefined' ? window.location.origin : ''
@@ -183,21 +183,38 @@ function InstallMac({ chip, manifest }) {
         Intel.
       </p>
       <Steps>
-        <li>Open the downloaded zip (it unzips by itself in Downloads).</li>
         <li>
-          <b>Right-click</b> <code>Start Photo Select.command</code> → <b>Open</b> → <b>Open</b>. Your browser opens the
-          setup page by itself. <b>Keep the window that appears open</b> while you swipe.
+          Open the <b>Downloads</b> folder and double-click the zip. A <b>Photo Select</b> app with a green heart icon
+          appears. (Optional: drag it into <b>Applications</b>.)
         </li>
         <li>
-          If it says it <i>can't be opened</i>: open <b>System Settings → Privacy &amp; Security</b>, scroll down and
-          click <b>Open Anyway</b> next to “Start Photo Select”. You only do this once. (It's blocked because the app
-          isn't from the App Store.)
+          <b>Double-click Photo Select.</b> Your web browser opens the setup page by itself. A small icon stays in your
+          Dock while it runs.
         </li>
         <li>
-          If your Mac asks <i>“Do you want the application photo-select to accept incoming network connections?”</i>{' '}
+          <b>Your Mac may say “Apple could not verify Photo Select is free of malware”.</b> That's normal for apps that
+          don't come from the App Store. Click <b>Done</b> (not “Move to Trash”), then:
+          <ol className="substeps">
+            <li>
+              Open the <b>Apple menu</b>  → <b>System Settings</b> → <b>Privacy &amp; Security</b>.
+            </li>
+            <li>
+              Scroll down to <b>Security</b>. Next to “Photo Select was blocked” click <b>Open Anyway</b>.
+            </li>
+            <li>
+              Enter your Mac password (or use Touch ID), then click <b>Open</b>. You only need to do this once.
+            </li>
+          </ol>
+        </li>
+        <li>
+          If your Mac asks <i>“Do you want the application Photo Select to accept incoming network connections?”</i>{' '}
           click <b>Allow</b>. That's how your phone connects.
         </li>
       </Steps>
+      <Note>
+        <b>Next time:</b> just double-click Photo Select. To stop it, click <b>Quit Photo Select</b> at the bottom of the
+        setup page.
+      </Note>
     </>
   )
 }
@@ -459,7 +476,7 @@ function Help({ os }) {
   const uninstall = {
     mac: (
       <>
-        Delete the folder you unzipped (and the zip).
+        Quit it, then drag <b>Photo Select</b> to the Trash.
       </>
     ),
     windows: (
@@ -487,7 +504,7 @@ function Help({ os }) {
     [
       'Nothing happened after I opened the app',
       <>
-        Make sure you pressed <Kbd>Return</Kbd>/<Kbd>Enter</Kbd>. If the browser didn't open, click{' '}
+        Give it a few seconds. If the browser didn't open, click{' '}
         <a href={LOCAL_URL} target="_blank" rel="noreferrer">
           Open Photo Select
         </a>{' '}
@@ -508,14 +525,14 @@ function Help({ os }) {
     ],
     [
       'How do I carry on later?',
-      'Open the app again, choose the same two folders and click Start swiping. It continues where you left off.',
+      'Double-click Photo Select again, choose the same two folders and click Start swiping. It continues where you left off.',
     ],
     [
       'How do I start over?',
       'Quit the app and delete the hidden .photo-select folder inside your output folder.',
     ],
     ['How do I update?', 'Download the latest version from this page and open it the same way. Your progress is kept.'],
-    ['How do I quit or uninstall?', <>To quit, close the window that opened with the app. To uninstall: {uninstall}</>],
+    ['How do I quit or uninstall?', <>To quit, click “Quit Photo Select” at the bottom of the setup page (on Windows, close the black window). To uninstall: {uninstall}</>],
   ]
 
   return (
