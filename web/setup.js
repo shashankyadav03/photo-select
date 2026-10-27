@@ -49,6 +49,7 @@ async function load() {
     form.hidden = true;
     return;
   }
+  $('quit-row').hidden = false;
   fill(s.config);
   showStatus(s);
   if (s.scanning) setTimeout(poll, 1000);
@@ -59,6 +60,12 @@ async function poll() {
   showStatus(s);
   if (s.scanning) setTimeout(poll, 1000);
 }
+
+$('quit').addEventListener('click', async () => {
+  await fetch('/api/quit', { method: 'POST' }).catch(() => {});
+  document.querySelector('.setup-page').innerHTML =
+    '<h1>📸 Photo Select has stopped</h1><p class="lead">You can close this tab. Open Photo Select again whenever you want to carry on.</p>';
+});
 
 $('source').addEventListener('input', suggestOutput);
 $('output').addEventListener('input', () => { outputTouched = true; });
