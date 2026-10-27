@@ -20,6 +20,17 @@ jobs:
       - run: go vet ./...
       - run: go test -race ./...
 
+  site:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: bash -n site/public/install.sh
+      - run: npm ci --no-audit --no-fund && npm run build
+        working-directory: site
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: test

@@ -22,6 +22,7 @@ Swipe-to-select photo culling: runs on the computer holding a big photo library 
 - `meta.go`: EXIF capture date + duplicate fingerprints (cached in `.photo-select/meta.json`), dedupe of identical files and RAW+JPEG pairs
 - `preview.go`: macOS `sips` previews (HEIC/RAW/large JPEG → 2048px JPEG), cached in the user cache dir
 - `server.go`: HTTP routes; `web/`: swipe page (`index.html`, `app.js`), Mac setup page (`setup.*`)
+- `site/`: friends homepage (React + Vite, separate from the Go app) with `install.sh`/`install.ps1`; `scripts/build-site.sh` bundles the app zips into it; deployed to Azure Static Web Apps by `.github/workflows/site.yml` (docs/AZURE.md)
 
 ## Conventions
 - Photos are identified by slash-separated path relative to the source folder.

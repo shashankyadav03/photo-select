@@ -1,0 +1,21 @@
+{
+  "navigationFallback": {
+    "rewrite": "/index.html",
+    "exclude": ["/downloads/*", "/assets/*", "/*.{sh,ps1,svg,json,ico}"]
+  },
+  "mimeTypes": {
+    ".sh": "text/plain; charset=utf-8",
+    ".ps1": "text/plain; charset=utf-8",
+    ".zip": "application/zip",
+    ".json": "application/json"
+  },
+  "routes": [
+    { "route": "/assets/*", "headers": { "cache-control": "public, max-age=31536000, immutable" } },
+    { "route": "/downloads/*", "headers": { "cache-control": "no-cache" } },
+    { "route": "/install.*", "headers": { "cache-control": "no-cache" } }
+  ],
+  "globalHeaders": {
+    "x-content-type-options": "nosniff",
+    "referrer-policy": "strict-origin-when-cross-origin"
+  }
+}
