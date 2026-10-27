@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { PLATFORMS, detectMacChip, detectOS } from './platform.js'
-import { CopyCommand, DownloadButton, Kbd, Note, Steps, Tabs } from './components.jsx'
+import { CopyCommand, DownloadButton, Kbd, Steps, Tabs } from './components.jsx'
 
 const LOCAL_URL = 'http://localhost:8787'
 const site = typeof window !== 'undefined' ? window.location.origin : ''
@@ -124,7 +124,7 @@ function PhoneMock() {
 
 function HowItWorks() {
   const cards = [
-    ['💻', 'Install the app', 'One command or one download on the computer that has your photos. No account, no sign-up.'],
+    ['💻', 'Install the app', 'One download on the computer that has your photos. No account, no sign-up.'],
     ['📁', 'Choose your photo folder', 'Point it at the folder (or drive) with your photos and pick where the keepers should go.'],
     ['📱', 'Swipe on your phone', 'Open the address it shows on any phone on the same Wi-Fi. Mirror to the TV so everyone can vote.'],
   ]
@@ -167,59 +167,37 @@ function Install({ os, setOS, chip, manifest }) {
 function InstallMac({ chip, manifest }) {
   return (
     <>
-      <h3>
-        Easiest: paste one line <span className="pill">Recommended</span>
-      </h3>
+      <div className="downloads">
+        <DownloadButton manifest={manifest} label="mac-apple-silicon" primary={chip !== 'intel'}>
+          Mac with Apple chip (M1–M4)
+        </DownloadButton>
+        <DownloadButton manifest={manifest} label="mac-intel" primary={chip === 'intel'}>
+          Mac with Intel chip
+        </DownloadButton>
+      </div>
+      <p className="muted small">
+        {chip
+          ? `This looks like a Mac with ${chip === 'intel' ? 'an Intel' : 'an Apple'} chip.`
+          : 'Not sure which one?'}{' '}
+        Click the Apple menu → <b>About This Mac</b>: <i>Chip: Apple M…</i> means Apple chip, <i>Processor: Intel</i> means
+        Intel.
+      </p>
       <Steps>
+        <li>Open the downloaded zip (it unzips by itself in Downloads).</li>
         <li>
-          Open <b>Terminal</b>: press <Kbd>⌘</Kbd> + <Kbd>Space</Kbd>, type <b>Terminal</b>, press <Kbd>Return</Kbd>.
+          <b>Right-click</b> <code>Start Photo Select.command</code> → <b>Open</b> → <b>Open</b>. Your browser opens the
+          setup page by itself. <b>Keep the window that appears open</b> while you swipe.
         </li>
         <li>
-          Click <b>Copy</b>, paste into Terminal (<Kbd>⌘</Kbd> + <Kbd>V</Kbd>) and press <Kbd>Return</Kbd>:
-          <CopyCommand command={`curl -fsSL ${site}/install.sh | bash -s ${site}`} />
-        </li>
-        <li>
-          It downloads the app, puts a <b>Photo Select</b> icon on your Desktop and starts it. Your browser opens the
-          setup page by itself. <b>Keep the Terminal window open</b> while you swipe.
+          If it says it <i>can't be opened</i>: open <b>System Settings → Privacy &amp; Security</b>, scroll down and
+          click <b>Open Anyway</b> next to “Start Photo Select”. You only do this once. (It's blocked because the app
+          isn't from the App Store.)
         </li>
         <li>
           If your Mac asks <i>“Do you want the application photo-select to accept incoming network connections?”</i>{' '}
           click <b>Allow</b>. That's how your phone connects.
         </li>
       </Steps>
-      <Note>
-        <b>Next time:</b> double-click <b>Photo Select</b> on your Desktop.
-      </Note>
-
-      <details className="alt">
-        <summary>Or download the app instead</summary>
-        <div className="downloads">
-          <DownloadButton manifest={manifest} label="mac-apple-silicon" primary={chip !== 'intel'}>
-            Mac with Apple chip (M1–M4)
-          </DownloadButton>
-          <DownloadButton manifest={manifest} label="mac-intel" primary={chip === 'intel'}>
-            Mac with Intel chip
-          </DownloadButton>
-        </div>
-        <p className="muted small">
-          {chip
-            ? `This looks like a Mac with ${chip === 'intel' ? 'an Intel' : 'an Apple'} chip.`
-            : 'Not sure which one?'}{' '}
-          Click the Apple menu → <b>About This Mac</b>: <i>Chip: Apple M…</i> means Apple chip, <i>Processor: Intel</i> means
-          Intel. Most Macs from 2021 on have an Apple chip.
-        </p>
-        <Steps>
-          <li>Open the downloaded zip (it unzips by itself in Downloads).</li>
-          <li>
-            <b>Right-click</b> <code>Start Photo Select.command</code> → <b>Open</b> → <b>Open</b>.
-          </li>
-          <li>
-            If it says it <i>can't be opened</i>: open <b>System Settings → Privacy &amp; Security</b>, scroll down and
-            click <b>Open Anyway</b> next to “Start Photo Select”. You only do this once. (It's blocked because the
-            app isn't from the App Store.)
-          </li>
-        </Steps>
-      </details>
     </>
   )
 }
@@ -227,51 +205,28 @@ function InstallMac({ chip, manifest }) {
 function InstallWindows({ manifest }) {
   return (
     <>
-      <h3>
-        Easiest: paste one line <span className="pill">Recommended</span>
-      </h3>
+      <div className="downloads">
+        <DownloadButton manifest={manifest} label="windows" primary>
+          Windows (64-bit)
+        </DownloadButton>
+      </div>
       <Steps>
         <li>
-          Open <b>PowerShell</b>: press the <Kbd>⊞ Win</Kbd> key, type <b>PowerShell</b>, press <Kbd>Enter</Kbd>.
+          Right-click the downloaded zip → <b>Extract All…</b> → <b>Extract</b>.
         </li>
         <li>
-          Click <b>Copy</b>, paste into PowerShell (right-click or <Kbd>Ctrl</Kbd> + <Kbd>V</Kbd>) and press{' '}
-          <Kbd>Enter</Kbd>:
-          <CopyCommand command={`$u='${site}'; irm $u/install.ps1 | iex`} />
+          Double-click <code>photo-select.exe</code> in the extracted folder. A black window opens and your browser shows
+          the setup page. <b>Keep the black window open</b> while you swipe.
         </li>
         <li>
-          It downloads the app, puts a <b>Photo Select</b> shortcut on your Desktop and starts it. A black window opens
-          and your browser shows the setup page. <b>Keep the black window open</b> while you swipe.
+          If a blue <i>“Windows protected your PC”</i> box appears, click <b>More info</b> → <b>Run anyway</b>. (It
+          appears because the app isn't from the Microsoft Store.)
         </li>
         <li>
           If <b>Windows Firewall</b> asks, tick <b>Private networks</b> and click <b>Allow access</b>. That's how your
           phone connects.
         </li>
       </Steps>
-      <Note>
-        <b>Next time:</b> double-click <b>Photo Select</b> on your Desktop.
-      </Note>
-
-      <details className="alt">
-        <summary>Or download the app instead</summary>
-        <div className="downloads">
-          <DownloadButton manifest={manifest} label="windows" primary>
-            Windows (64-bit)
-          </DownloadButton>
-        </div>
-        <Steps>
-          <li>
-            Right-click the downloaded zip → <b>Extract All…</b> → <b>Extract</b>.
-          </li>
-          <li>
-            Double-click <code>photo-select.exe</code> in the extracted folder.
-          </li>
-          <li>
-            If a blue <i>“Windows protected your PC”</i> box appears, click <b>More info</b> → <b>Run anyway</b>. (It
-            appears because the app isn't from the Microsoft Store.)
-          </li>
-        </Steps>
-      </details>
     </>
   )
 }
@@ -279,34 +234,21 @@ function InstallWindows({ manifest }) {
 function InstallLinux({ manifest }) {
   return (
     <>
-      <h3>
-        Easiest: paste one line <span className="pill">Recommended</span>
-      </h3>
+      <div className="downloads">
+        <DownloadButton manifest={manifest} label="linux" primary>
+          Linux (x86-64)
+        </DownloadButton>
+        <DownloadButton manifest={manifest} label="linux-arm64">
+          Linux (ARM64)
+        </DownloadButton>
+      </div>
       <Steps>
-        <li>Open a terminal.</li>
+        <li>Unzip the download.</li>
         <li>
-          Paste this and press <Kbd>Enter</Kbd>:
-          <CopyCommand command={`curl -fsSL ${site}/install.sh | bash -s ${site}`} />
-        </li>
-        <li>
-          It installs into <code>~/PhotoSelect</code> and starts the app. Next time run{' '}
-          <code>~/PhotoSelect/photo-select</code>.
+          Double-click <code>photo-select</code> in the extracted folder (or run it from your file manager). Your browser
+          opens the setup page.
         </li>
       </Steps>
-      <details className="alt">
-        <summary>Or download the app instead</summary>
-        <div className="downloads">
-          <DownloadButton manifest={manifest} label="linux" primary>
-            Linux (x86-64)
-          </DownloadButton>
-          <DownloadButton manifest={manifest} label="linux-arm64">
-            Linux (ARM64)
-          </DownloadButton>
-        </div>
-        <p className="muted small">
-          Unzip it and run <code>./photo-select</code> in the extracted folder.
-        </p>
-      </details>
     </>
   )
 }
@@ -517,18 +459,17 @@ function Help({ os }) {
   const uninstall = {
     mac: (
       <>
-        Delete the <code>PhotoSelect</code> folder in your home folder and the <b>Photo Select</b> icon on your Desktop.
+        Delete the folder you unzipped (and the zip).
       </>
     ),
     windows: (
       <>
-        Delete the <b>Photo Select</b> shortcut on your Desktop and the folder <code>%LOCALAPPDATA%\PhotoSelect</code>{' '}
-        (paste that into File Explorer's address bar).
+        Delete the folder you extracted (and the zip).
       </>
     ),
     linux: (
       <>
-        Delete the <code>~/PhotoSelect</code> folder.
+        Delete the folder you unzipped.
       </>
     ),
   }[os]
@@ -544,13 +485,13 @@ function Help({ os }) {
       </>,
     ],
     [
-      'Nothing happened after I pasted the command',
+      'Nothing happened after I opened the app',
       <>
         Make sure you pressed <Kbd>Return</Kbd>/<Kbd>Enter</Kbd>. If the browser didn't open, click{' '}
         <a href={LOCAL_URL} target="_blank" rel="noreferrer">
           Open Photo Select
         </a>{' '}
-        yourself. If you see an error, copy the command again from this page and retry.
+        yourself. If you see an error, download the app again from this page and retry.
       </>,
     ],
     [
@@ -567,14 +508,14 @@ function Help({ os }) {
     ],
     [
       'How do I carry on later?',
-      'Start the app again (Desktop icon), choose the same two folders and click Start swiping. It continues where you left off.',
+      'Open the app again, choose the same two folders and click Start swiping. It continues where you left off.',
     ],
     [
       'How do I start over?',
       'Quit the app and delete the hidden .photo-select folder inside your output folder.',
     ],
-    ['How do I update?', 'Run the install command from this page again. Your progress is kept.'],
-    ['How do I quit or uninstall?', <>To quit, close the Terminal/black window. To uninstall: {uninstall}</>],
+    ['How do I update?', 'Download the latest version from this page and open it the same way. Your progress is kept.'],
+    ['How do I quit or uninstall?', <>To quit, close the window that opened with the app. To uninstall: {uninstall}</>],
   ]
 
   return (
