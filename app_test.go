@@ -237,6 +237,34 @@ func TestValidate(t *testing.T) {
 	}
 }
 
+func TestValidateResumesParentProject(t *testing.T) {
+	src, _ := newProject(t)
+	out := filepath.Join(src, "_PhotoSelect")
+	sess, err := OpenSession(out)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := sess.Push(Entry{Op: OpReject, Path: "a.jpg"}); err != nil {
+		t.Fatal(err)
+	}
+	sess.Close()
+	// A stray empty log in the nested folder must not win.
+	if s, err := OpenSession(filepath.Join(out, selectedFolder)); err == nil {
+		s.Close()
+	}
+	for _, picked := range []string{out, filepath.Join(out, selectedFolder), filepath.Join(out, selectedFolder, "sub")} {
+		c := Config{Source: src, Output: picked}
+		if err := c.Validate(); err != nil || c.Output != out {
+			t.Errorf("picked %s: got %s, %v", picked, c.Output, err)
+		}
+	}
+	other := filepath.Join(src, "Elsewhere")
+	c := Config{Source: src, Output: other}
+	if err := c.Validate(); err != nil || c.Output != other {
+		t.Errorf("unrelated folder changed: %s %v", c.Output, err)
+	}
+}
+
 func TestCleanPath(t *testing.T) {
 	home, _ := os.UserHomeDir()
 	cases := map[string]string{

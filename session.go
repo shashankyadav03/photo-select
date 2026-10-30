@@ -36,6 +36,24 @@ type Session struct {
 
 func stateDir(output string) string { return filepath.Join(output, ".photo-select") }
 
+// projectRoot returns the nearest folder at or above dir whose decision log
+// has progress in it, so picking a project's Selected/ folder (or any folder
+// inside it) as the output resumes that project instead of starting a new
+// empty one. The search stops before reaching source or its parents.
+func projectRoot(dir, source string) string {
+	for d := dir; d != source && !isWithin(source, d); {
+		if info, err := os.Stat(filepath.Join(stateDir(d), "decisions.jsonl")); err == nil && info.Size() > 0 {
+			return d
+		}
+		p := filepath.Dir(d)
+		if p == d {
+			break
+		}
+		d = p
+	}
+	return dir
+}
+
 func OpenSession(output string) (*Session, error) {
 	dir := stateDir(output)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
