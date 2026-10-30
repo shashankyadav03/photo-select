@@ -40,6 +40,7 @@ func (c *Config) Validate() error {
 	if c.Output == "" {
 		return errors.New("choose where the selected photos should go")
 	}
+	c.Output = projectRoot(c.Output, c.Source)
 	if c.Output == c.Source {
 		return errors.New("the output folder must be different from the photo folder")
 	}
